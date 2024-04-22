@@ -1,0 +1,9 @@
+[submodule "src/modules/dms"]
+	path = src/modules/dms
+	url = https://github.com/availabs/dms
+[submodule "src/modules/ams"]
+	path = src/modules/ams
+	url = https://github.com/availabs/ams
+[submodule "src/modules/avl-falcor"]
+	path = src/modules/avl-falcor
+	url = https://github.com/availabs/avl-falcor
