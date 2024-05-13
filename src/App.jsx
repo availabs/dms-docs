@@ -1,30 +1,40 @@
-import { dmsPageFactory, registerDataType } from "./modules/dms/src"
-
-import siteConfig from './modules/dms/src/patterns/page/siteConfig'
-import Selector, { registerComponents } from "./modules/dms/src/patterns/page/selector"
-registerDataType("selector", Selector)
+import React from 'react'
 
 import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
 
-
-const siteCMS = { 
-  ...dmsPageFactory(
-    siteConfig({
-      app: "dms-docs",
-      type: "main",
-      logo: <div className='flex items-center px-8 h-full text-lg font-bold' >DMS</div>, 
-      rightMenu: () => <div> right </div>,
-      baseUrl: ""
-    }
-  ), "/")
+export const getSubdomain = (host) => {
+    // ---
+    // takes window.location.host and returns subdomain
+    // only works with single depth subdomains 
+    // ---
+    return host.split('.').length > 2 ?
+    window.location.host.split('.')[0].toLowerCase() : 
+    host.split('.').length > 1 ?  
+        window.location.host.split('.')[0].toLowerCase() :  
+        false
 }
 
+import dmsDocs from './sites/dms'
+import stories from './sites/stories'
+
+const Sites = {
+  'docs': dmsDocs,
+  'stories': stories
+}
+
+
 function App() {
+  const SUBDOMAIN = getSubdomain(window.location.host)
+
+  const site = React.useMemo(() => {
+      return Sites?.[SUBDOMAIN] || Sites['stories']
+  },[SUBDOMAIN])
+
   return (
-    <RouterProvider router={createBrowserRouter([siteCMS])} />
+    <RouterProvider router={createBrowserRouter([...site])} />
   )
 }
 
