@@ -30,7 +30,7 @@ function App() {
   const SUBDOMAIN = getSubdomain(window.location.host)
 
   const site = React.useMemo(() => {
-      return Sites?.[SUBDOMAIN] || Sites['stories']
+      return Sites?.[SUBDOMAIN] || Sites['docs']
   },[SUBDOMAIN])
 
   return (

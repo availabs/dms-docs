@@ -14,8 +14,8 @@ const dmsDocs = {
       app: "dms-docs",
       type: "main",
       logo: <div className='flex items-center px-8 h-full text-lg font-bold' >DMS</div>, 
-      rightMenu:  <Link className='flex items-center px-8 text-lg font-bold h-12' to='/stories'> right </Link>,
-      baseUrl: "",
+      rightMenu:  <Link className='flex items-center px-8 text-lg font-bold h-12' to='/'> right </Link>,
+      baseUrl: "/docs",
       API_HOST
     }
   ))
@@ -25,5 +25,5 @@ const dmsDocs = {
 
 export default [
   dmsDocs,
-  dmsPageFactory(storiesConfig({baseUrl:'/stories'}))
+  dmsPageFactory(storiesConfig({baseUrl:''}))
 ]
