@@ -89,7 +89,7 @@ function Home ({dataItems, ...props}) {
           {/* ------- Projects ----- */}
           {projects.map(proj => (
             <Card className='xl:col-span-5' key={proj.id}>
-              <Link to={`/${baseUrl}/project/${proj.id}`}>
+              <Link to={`${baseUrl}/project/${proj.id}`}>
               <H2>{proj.name}</H2>
               <P>{proj.desc}</P>
               </Link>

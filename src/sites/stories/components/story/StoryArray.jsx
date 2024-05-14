@@ -50,6 +50,8 @@ const types = {
 	'none': { bg: 'bg-gray-300 hover:bg-gray-200 hover:text-gray-200 text-gray-300', name: 'x'},
 	'Feature': { bg: 'bg-lime-500 hover:bg-lime-300', name: 'Feature'},
 	'Research': { bg: 'bg-purple-500 hover:bg-purple-300', name: 'Research'},
+	'Data Management': { bg: 'bg-teal-500 hover:bg-teal-300', name: 'Data Management'},
+	'Data Processing': { bg: 'bg-cyan-500 hover:bg-cyan-300', name: 'Data Processing'},
 	'Bug': { bg: 'bg-pink-400 hover:bg-pink-300', name: 'Bug'},
 }
 
