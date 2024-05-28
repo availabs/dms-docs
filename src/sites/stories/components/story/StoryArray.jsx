@@ -19,14 +19,15 @@ import {
 	MenuItem
 } from '../../ui/'
 
-import {ProjectContext} from '../../pages/project'
+import { ProjectContext } from '../../pages/project'
 import { StoriesContext } from '../../index'
-import { StoryArcFormat, StoryFormat } from '../../stories.formats.js'
+import { StoryArcFormat, StoryFormat, MemberFormat} from '../../stories.formats.js'
 
 import {
 	MagnifyingGlassCircle
 } from '../../ui/icons'
 
+import cloneDeep from 'lodash/cloneDeep'
 
 const statuses = {
 	'none': { bg: 'bg-gray-300 hover:bg-gray-200 hover:text-gray-200 text-gray-300',index: -1, name: 'x'},
@@ -91,7 +92,48 @@ function StoryDataSelector({story,type, values}) {
 	)
 }
 
-function StoryRow ({story, updateStory}) {
+function StoryOwnerSelector({story, members, values}) {
+	const { apiUpdate } = React.useContext(ProjectContext) || {}
+	//console.log('story', story)
+	let ownerIds = (story?.owners || []).map(owner => owner.id)
+				
+	return (
+			<ButtonMenu
+			className=''
+			width={'w-44'}
+			location={'-left-0'}
+			button={(
+				<div className={`w-44 h-9 text-zinc-50 flex border border-transparent flex-1 items-center justify-center focus:border-blue-700 active:border-blue-700`} >
+					 {story?.owners?.map(d => { 
+					 	let mem = members.filter(m => m.id === d.id)?.[0]
+					 	return (<div className='rounded-full bg-zinc-300 p-1 h-7 w-7 flex items-center justify-center'>{mem?.initials}</div>)
+					 })} 
+				</div>
+			)}
+		>
+			{members.map(member => {
+				let isOwner = ownerIds.indexOf(member.id) !== -1
+				return (
+					<MenuItem key={member.user_id} onClick={() => {
+						let newOwners = cloneDeep(story?.owners || [])
+						if(isOwner) {
+							newOwners = newOwners.filter(d => d.id !== member.id)
+						} else {
+							newOwners.push(member)
+						}
+						console.log('newOwners', newOwners)
+						apiUpdate({data: {id: story.id, owners: newOwners}, config: {format: StoryFormat}})
+					}}>
+						<div className={`flex flex-1 p-1 hover:bg-zinc-100 ${isOwner ? 'bg-blue-100 hover:bg-blue-200' : ''}`}>
+							<div className={`flex flex-1 p-1 h-8 text-zinc-600 items-center justify-between `}><div className='rounded-full bg-zinc-300 p-1 h-8 w-8 flex items-center justify-center'>{member.initials}</div> {member.name}  </div>
+						</div>
+					</MenuItem>
+			)})}
+		</ButtonMenu>
+	)
+}
+
+function StoryRow ({story, members, updateStory}) {
 	const { project, baseUrl, apiUpdate } = React.useContext(ProjectContext) || {}
 	return (
 		<tr className='hover:bg-zinc-50 hover:shadow-md dark:hover:bg-zinc-800 border-l-8 border-zinc-500'>
@@ -110,7 +152,12 @@ function StoryRow ({story, updateStory}) {
 					</div>
 				</Link>
 			</TD>
-			<TD />
+			<TD className='w-44 h-10'>
+				<StoryOwnerSelector 
+					story={story}
+					members={members}
+				/>
+			</TD>
 			<TD className='w-36 h-10'> 
 				<StoryDataSelector
 					story={story}
@@ -250,7 +297,7 @@ function TotalsRow ({stories}) {
     
 
 function Edit ({Component, item, value, onChange, attr, ...props }) {
-	
+	const { project, baseUrl, apiUpdate, apiLoad } = React.useContext(ProjectContext) || {}
 	
 	const createStory = (v) => {
 		onChange([
@@ -258,6 +305,29 @@ function Edit ({Component, item, value, onChange, attr, ...props }) {
 			{ title: v, state: 'unstarted' } 
 		])
 	}
+
+	const [members,setMembers] = React.useState([])
+
+  React.useEffect(() => {
+    const loadMembers = async () => {
+      // console.log('gonna load')
+      let memData = await apiLoad({
+        format: MemberFormat, 
+        children: [
+        { 
+          action: "list",
+          path: "/*",
+          // filter:{
+          //   attributes: ['name', 'desc']
+          // },
+        }]
+      })
+      //setUsers(storyMembers)
+      console.log('memData', memData)
+      setMembers(memData)
+    }
+    loadMembers()
+  },[])
 	
 
 	return (
@@ -279,7 +349,7 @@ function Edit ({Component, item, value, onChange, attr, ...props }) {
 							//console.log('sort',a,b, a?.[status] || 'none', a?.[status] || 'none', statuses[b?.[status] || 'none'].index, statuses[a?.[status] || 'none'].index , statuses[b?.[status] || 'none'].index - statuses[a?.[status] || 'none'].index)
 							return statuses[b?.['status'] || 'none'].index - statuses[a?.['status'] || 'none'].index
 						})
-						.map((story,i) => <StoryRow key={i} story={story} />)}
+						.map((story,i) => <StoryRow members={members} key={i} story={story} />)}
 					<CreateStoryRow createStory={createStory}/>
 					<TotalsRow stories={value} />
 				</tbody>

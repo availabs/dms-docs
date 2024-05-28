@@ -5,6 +5,10 @@ import {
   RouterProvider
 } from "react-router-dom";
 
+import { dmsPageFactory, dmsSiteFactory, registerDataType, Selector, adminConfig } from './modules/dms/src'
+
+import Auth from './sites/auth'
+
 export const getSubdomain = (host) => {
     // ---
     // takes window.location.host and returns subdomain
@@ -25,16 +29,42 @@ const Sites = {
   'stories': stories
 }
 
+//console.log('test', Auth)
+
+Auth.forEach(f => {
+  f.Component = f.element 
+  delete f.element
+})
 
 function App() {
   const SUBDOMAIN = getSubdomain(window.location.host)
+  // const [dynamicRoutes, setDynamicRoutes] = React.useState([]);
+  //   React.useEffect(() => {
+  //       (async function() {
+  //           const dynamicRoutes = await dmsSiteFactory(adminConfig({
+  //               app: 'dms-site',
+  //               type: 'pattern-admin',
+  //               baseUrl: '/'
+  //           }));
+
+  //           //dynamicRoutes.map(Route => LayoutWrapper(Route))
+  //           setDynamicRoutes(dynamicRoutes);
+  //       })()
+
+  //   }, []);
+
+    
+
+
 
   const site = React.useMemo(() => {
       return Sites?.[SUBDOMAIN] || Sites['docs']
   },[SUBDOMAIN])
 
+  // console.log('rendering',site)
+
   return (
-    <RouterProvider router={createBrowserRouter([...site])} />
+    <RouterProvider router={createBrowserRouter([...site,...Auth])} />
   )
 }
 

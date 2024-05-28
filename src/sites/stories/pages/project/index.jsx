@@ -48,7 +48,7 @@ function NewArcModal ({setOpen, state, setState, createArc }) {
 
 
 
-function Project ({dataItems, item, updateAttribute,attributes, apiUpdate, status, params, ...props}) {
+function Project ({dataItems, item, updateAttribute,attributes, apiUpdate, apiLoad, status, params, ...props}) {
 
   //console.log(item)
   const submit = useSubmit()
@@ -89,7 +89,7 @@ function Project ({dataItems, item, updateAttribute,attributes, apiUpdate, statu
   }
 
   return (
-    <ProjectContext.Provider value={{project:item, params, apiUpdate, baseUrl}}>
+    <ProjectContext.Provider value={{project:item, params, apiUpdate, baseUrl, apiLoad}}>
       <StoryModal storyId={params.storyId} />
       <div className='relative mx-auto lg:max-w-7xl '>
         <main className='pb-40'>

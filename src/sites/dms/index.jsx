@@ -3,7 +3,7 @@ import {Link} from 'react-router-dom'
 import { dmsPageFactory, registerDataType } from "../../modules/dms/src"
 import siteConfig from '../../modules/dms/src/patterns/page/siteConfig'
 import Selector, { registerComponents } from "../../modules/dms/src/patterns/page/selector"
-import  { storiesConfig } from '../stories'
+import  { storiesConfig, membersConfig } from '../stories'
 registerDataType("selector", Selector)
 
 const API_HOST = 'https://graph.availabs.org'
@@ -25,5 +25,6 @@ const dmsDocs = {
 
 export default [
   dmsDocs,
-  dmsPageFactory(storiesConfig({baseUrl:''}))
+  dmsPageFactory(storiesConfig({baseUrl:''})),
+  dmsPageFactory(membersConfig({baseUrl:'/users'}))
 ]

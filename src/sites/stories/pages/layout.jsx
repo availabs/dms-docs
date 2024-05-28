@@ -1,23 +1,49 @@
 
 import React from 'react'
 import Layout from '../ui/layout/layout'
+import { ProjectFormat } from '../stories.formats.js'
 
-const Wrapper = ({dataItems, children, baseUrl, logo, rightMenu}) => {
+const Wrapper = ({dataItems, apiLoad, children, baseUrl, logo, rightMenu, }) => {
   
-  const projects = React.useMemo(()=> {
-    return dataItems.filter(d => !d.icebox)
+  // const projects = React.useMemo(()=> {
+  //   return dataItems
+  // },[dataItems])
+  const [projects,setProjects] = React.useState([])
+
+  React.useEffect(() => {
+    const loadProjects = async () => {
+      // console.log('gonna load')
+      let projdata = await apiLoad({
+        format: ProjectFormat, 
+        children: [
+        { 
+          action: "list",
+          path: "/*",
+          // filter:{
+          //   attributes: ['name', 'desc']
+          // },
+        }]
+      })
+      //setUsers(storyMembers)
+      setProjects(projdata.filter(d => !d.icebox))
+    }
+    loadProjects()
   },[dataItems])
+
+  //
+  let navUrl = baseUrl.replace('/users','')
+  //console.log('navUrl',navUrl, baseUrl)
 
   const menuItems = [
     {
       id: 'Home',
       name: 'Home',
-      path: `${baseUrl}/`,
+      path: `${navUrl}/`,
     },
     {
       id: 'tasks',
       name: 'Tasks',
-      path: `${baseUrl}/tasks`
+      path: `${navUrl}/tasks`
     },
    
     {
@@ -28,7 +54,7 @@ const Wrapper = ({dataItems, children, baseUrl, logo, rightMenu}) => {
     ...projects.map(d => {
       return {
           id: d.id,
-          path: `${baseUrl}/project/${d.id}`,
+          path: `${navUrl}/project/${d.id}`,
           name: `${d.name}`,
       }
     })

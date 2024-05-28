@@ -1,5 +1,7 @@
 import React from 'react'
 import { dmsPageFactory, registerDataType } from "../../modules/dms/src"
+import { Link } from 'react-router-dom'
+import AuthMenu from './ui/AuthMenu'
 
 import siteConfig from '../../modules/dms/src/patterns/page/siteConfig'
 import Selector, { registerComponents } from "../../modules/dms/src/patterns/page/selector"
@@ -7,27 +9,29 @@ registerDataType("selector", Selector)
 
 const API_HOST = 'https://graph.availabs.org'
 
-import { StoryFormat, ProjectFormat } from './stories.formats'
+import { StoryFormat, ProjectFormat, MemberFormat } from './stories.formats'
 
 export const StoriesContext = React.createContext(undefined);
 
 import Home from './pages/home'
 import Tasks from './pages/tasks'
 import Project from './pages/project'
+import ManageUsers from './pages/users/manage'
 import Layout from './pages/layout'
 
 export const storiesConfig = (config) => {
-  const { baseUrl } = config
+  const { baseUrl, AUTH_HOST = 'https://availauth.availabs.org' } = config
+  console.log('test', AUTH_HOST)
   return {
     format: ProjectFormat,
     baseUrl, 
     children: [
       { 
         type: (props) => (
-          <StoriesContext.Provider value={{baseUrl, user: props.user}}>
+          <StoriesContext.Provider value={{baseUrl, user: props.user, AUTH_HOST}}>
             <Layout 
               logo = {<div className='flex items-center px-8 h-14 bg-zinc-50 dark:bg-zinc-950 dark:text-zinc-100 text-lg font-bold'>Stories</div>}
-              rightMenu={<div className='flex items-center px-8 text-lg font-bold h-12 dark:text-zinc-100' to='/stories'> Login </div>}
+              rightMenu={<AuthMenu />}
               baseUrl={baseUrl}
               {...props}
             />
@@ -58,7 +62,44 @@ export const storiesConfig = (config) => {
             type: Project,
             action: "edit",
             path: "/project/:id/story/:storyId",
-          }
+          },
+          // { 
+          //   type: ManageUsers,
+          //   action: "edit",
+          //   path: "/manage-users",
+          // },
+        ]
+      }
+    ]
+  }
+}
+
+export const membersConfig = (config) => {
+  const { baseUrl, AUTH_HOST = 'https://availauth.availabs.org' } = config
+  //console.log('test', AUTH_HOST)
+  return {
+    format: MemberFormat,
+    baseUrl, 
+    children: [
+      { 
+        type: (props) => (
+          <StoriesContext.Provider value={{baseUrl, user: props.user, AUTH_HOST}}>
+            <Layout 
+              logo = {<div className='flex items-center px-8 h-14 bg-zinc-50 dark:bg-zinc-950 dark:text-zinc-100 text-lg font-bold'>Stories</div>}
+              rightMenu={<AuthMenu />}
+              baseUrl={baseUrl}
+              {...props}
+            />
+          </StoriesContext.Provider>
+        ),
+        action: "list",
+        path: "/*",
+        children: [
+          { 
+            type: ManageUsers,
+            action: "edit",
+            path: "/manage",
+          },
         ]
       }
     ]
@@ -66,4 +107,7 @@ export const storiesConfig = (config) => {
 }
 
 
-export default [dmsPageFactory(storiesConfig({baseUrl:''}))]
+export default [
+  dmsPageFactory(storiesConfig({baseUrl:''})), 
+  dmsPageFactory(membersConfig({baseUrl:'/users'}))
+]

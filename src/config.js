@@ -1,4 +1,4 @@
-export const PROJECT_NAME = "test";
+export const PROJECT_NAME = "project-manager";
 
 let API_HOST = "https://graph.availabs.org";
 let AUTH_HOST = "https://graph.availabs.org";

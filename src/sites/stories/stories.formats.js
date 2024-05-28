@@ -77,22 +77,17 @@ export const StoryFormat = {
     { key: "status",
       type: "text",
     },
-    { key: "requestedBy",
-      type: "text",
-      required: true,
-      editable: false,
-      default: "props:pmMember.data.name",
-      liveUpdate: true
-    },
-    { key: "owner",
-      type: "select",
+    // { key: "requestedBy",
+    //   type: "text",
+    //   required: true,
+    //   editable: false,
+    //   default: "props:pmMember.data.name",
+    //   liveUpdate: true
+    // },
+    { key: "owners",
+      type: 'dms-format',
       isArray: true,
-      liveUpdate: true,
-      inputProps: {
-        valueAccessor: d => d.id,
-        accessor: d => d.data.name,
-        domain: "props:pmMembers"
-      }
+      format: 'project-manager2+member'
     },
     { key: "description",
       type: "lexical"
@@ -100,20 +95,17 @@ export const StoryFormat = {
   ]
 }
 
-export const Member = {
+export const MemberFormat = {
   app: "project-manager2",
   type: "member",
   attributes: [
-    { key: "amsId",
-      name: "AVAILabber",
-      type: "select",
-      required: true,
-      editable: "before-create",
-      inputProps: {
-        domain: "props:availUsers",
-        accessor: user => `(${ user.id }) ${ user.email} `,
-        valueAccessor: user => user.id
-      }
+    { key: "user_id",
+      type: "text",
+      required: true
+    },
+    { key: "email",
+      type: "text",
+      required: true
     },
     { key: "name",
       type: "text",
@@ -125,12 +117,7 @@ export const Member = {
       verify: "^[A-Z]{2,3}$"
     },
     { key: "role",
-      type: "select",
-      inputProps: {
-        domain: ["user", "admin"],
-        searchable: false,
-        removable: false
-      },
+      type: "text",
       default: "user",
       hidden: "props:hideRole"
     }
@@ -197,6 +184,13 @@ export const ProjectFormat = {
       isArray: true,
       format: 'project-manager2+story-arc',
       DisplayComp: StoryArcArray
+    },
+    {
+      key: 'members',
+      type: 'dms-format',
+      isArray: true,
+      format: 'project-manager2+member',
+      //DisplayComp: MemberFormat
     },
   ]
 }
