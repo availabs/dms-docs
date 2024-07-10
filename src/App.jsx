@@ -1,11 +1,12 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react'
 
 import {
   createBrowserRouter,
   RouterProvider
 } from "react-router-dom";
 
-import { dmsPageFactory, dmsSiteFactory, registerDataType, Selector, adminConfig } from './modules/dms/src'
+import { dmsSiteFactory, registerDataType, Selector, adminConfig, registerComponents } from "./modules/dms/src/"
+registerDataType("selector", Selector)
 
 import Auth from './sites/auth'
 
@@ -24,10 +25,10 @@ export const getSubdomain = (host) => {
 import dmsDocs from './sites/dms'
 import stories from './sites/stories'
 
-const Sites = {
-  'docs': dmsDocs,
-  'stories': stories
-}
+// const Sites = {
+//   'docs': dmsDocs,
+//   'stories': stories
+// }
 
 //console.log('test', Auth)
 
@@ -38,34 +39,35 @@ Auth.forEach(f => {
 
 function App() {
   const SUBDOMAIN = getSubdomain(window.location.host)
-  // const [dynamicRoutes, setDynamicRoutes] = React.useState([]);
-  //   React.useEffect(() => {
-  //       (async function() {
-  //           const dynamicRoutes = await dmsSiteFactory(adminConfig({
-  //               app: 'dms-site',
-  //               type: 'pattern-admin',
-  //               baseUrl: '/'
-  //           }));
+  const [dynamicRoutes, setDynamicRoutes] = useState([]);
+    useEffect(() => {
+        (async function() {
+            const dynamicRoutes = await dmsSiteFactory({
+                dmsConfig:adminConfig({
+                    app: 'dms-docs',
+                    type: 'pattern-admin',
+                    baseUrl: '/list'
+                }),
+                //theme   
+            });
+            setDynamicRoutes(dynamicRoutes);
+        })()
+    }, []);
 
-  //           //dynamicRoutes.map(Route => LayoutWrapper(Route))
-  //           setDynamicRoutes(dynamicRoutes);
-  //       })()
+    //console.log('routes',dynamicRoutes)
 
-  //   }, []);
+    const PageNotFoundRoute = {
+        path: "/*",
+        Component: () => (<div className={'w-screen h-screen flex items-center bg-blue-50'}></div>)
+    }
 
-    
-
-
-
-  const site = React.useMemo(() => {
-      return Sites?.[SUBDOMAIN] || Sites['docs']
-  },[SUBDOMAIN])
-
-  // console.log('rendering',site)
-
-  return (
-    <RouterProvider router={createBrowserRouter([...site,...Auth])} />
-  )
+    return (
+        <RouterProvider router={createBrowserRouter([
+          ...dynamicRoutes,
+          //...stories,
+          ...Auth,
+          PageNotFoundRoute ])} />
+    )
 }
 
 export default App
