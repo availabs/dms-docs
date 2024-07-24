@@ -55,7 +55,7 @@ const  NewUserModal =  withAuth(({open, setOpen, apiLoad,apiUpdate,users }) => {
 
         })
         let data = await r.json()
-        console.log('users',data.users.filter(d => d?.groups?.includes('AVAIL')))
+        //console.log('users',data.users.filter(d => d?.groups?.includes('AVAIL')))
         setAuthUsers(data.users.filter(d => d?.groups?.includes('AVAIL')))
         
       }

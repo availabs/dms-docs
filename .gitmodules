@@ -2,3 +2,18 @@
 	path = src/modules/dms
 	url = https://github.com/availabs/dms
 
+[submodule "src/component_registry"]
+	path = src/component_registry
+	url = git@github.com:availabs/component_registry.git
+[submodule "src/modules/avl-falcor"]
+	path = src/modules/avl-falcor
+	url = git@github.com:availabs/avl-falcor.git
+[submodule "src/modules/avl-components"]
+	path = src/modules/avl-components
+	url = git@github.com:availabs/avl-components.git
+[submodule "src/modules/avl-graph"]
+	path = src/modules/avl-graph
+	url = git@github.com:availabs/avl-graph.git
+[submodule "src/modules/avl-maplibre"]
+	path = src/modules/avl-maplibre
+	url = https://github.com/availabs/avl-maplibre

@@ -3,8 +3,9 @@ import { dmsPageFactory, registerDataType } from "../../modules/dms/src"
 import { Link } from 'react-router-dom'
 import AuthMenu from './ui/AuthMenu'
 
-import siteConfig from '../../modules/dms/src/patterns/page/siteConfig'
-import Selector, { registerComponents } from "../../modules/dms/src/patterns/page/selector"
+import { withAuth } from "@availabs/ams"
+
+import { Selector,  registerComponents } from "../../modules/dms/src"
 registerDataType("selector", Selector)
 
 const API_HOST = 'https://graph.availabs.org'
@@ -21,7 +22,7 @@ import Layout from './pages/layout'
 
 export const storiesConfig = (config) => {
   const { baseUrl, AUTH_HOST = 'https://availauth.availabs.org' } = config
-  console.log('test', AUTH_HOST)
+  //console.log('test', AUTH_HOST)
   return {
     format: ProjectFormat,
     baseUrl, 
@@ -39,6 +40,7 @@ export const storiesConfig = (config) => {
         ),
         action: "list",
         path: "/*",
+        authLevel: 1,
         filter:{
           attributes: ['name', 'desc']
         },
@@ -50,8 +52,13 @@ export const storiesConfig = (config) => {
           },
           { 
             type: Tasks,
-            action: "view",
+            action: "edit",
             path: "/tasks",
+          },
+          { 
+            type: Tasks,
+            action: "edit",
+            path: "/tasks/:userId",
           },
           { 
             type: Project,
@@ -94,6 +101,7 @@ export const membersConfig = (config) => {
         ),
         action: "list",
         path: "/*",
+        authLevel:10,
         children: [
           { 
             type: ManageUsers,
@@ -108,6 +116,6 @@ export const membersConfig = (config) => {
 
 
 export default [
-  dmsPageFactory(storiesConfig({baseUrl:''})), 
-  dmsPageFactory(membersConfig({baseUrl:'/users'}))
+  dmsPageFactory(storiesConfig({baseUrl:''}),withAuth), 
+  dmsPageFactory(membersConfig({baseUrl:'/users'}),withAuth)
 ]

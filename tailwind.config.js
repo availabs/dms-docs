@@ -5,6 +5,7 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    './node_modules/@availabs/**/*.{vue,js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
