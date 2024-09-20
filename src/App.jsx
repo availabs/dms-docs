@@ -5,6 +5,7 @@ import {
   RouterProvider
 } from "react-router-dom";
 
+<<<<<<< HEAD
 import { DmsSite, adminConfig, registerComponents } from "./modules/dms/src/"
 import { withAuth, useAuth } from "@availabs/ams"
 import ComponentRegistry from '~/component_registry'
@@ -12,6 +13,10 @@ import ComponentRegistry from '~/component_registry'
 
 registerComponents(ComponentRegistry)
 //registerDataType("selector", Selector)
+=======
+import { dmsSiteFactory, registerDataType, Selector, adminConfig, registerComponents } from "./modules/dms/src/"
+registerDataType("selector", Selector)
+>>>>>>> 9e1d7473304de56056ac7c92f2a6f413941fa399
 
 import Auth from './sites/auth'
 
@@ -31,6 +36,7 @@ Auth.forEach(f => {
 })
 
 function App() {
+<<<<<<< HEAD
 
     const PageNotFoundRoute = {
         path: "/*",
@@ -55,6 +61,37 @@ function App() {
 
             ]}
         />
+=======
+  const SUBDOMAIN = getSubdomain(window.location.host)
+  const [dynamicRoutes, setDynamicRoutes] = useState([]);
+    useEffect(() => {
+        (async function() {
+            const dynamicRoutes = await dmsSiteFactory({
+                dmsConfig:adminConfig({
+                    app: 'dms-docs',
+                    type: 'pattern-admin',
+                    baseUrl: '/list'
+                }),
+                //theme   
+            });
+            setDynamicRoutes(dynamicRoutes);
+        })()
+    }, []);
+
+    //console.log('routes',dynamicRoutes)
+
+    const PageNotFoundRoute = {
+        path: "/*",
+        Component: () => (<div className={'w-screen h-screen flex items-center bg-blue-50'}></div>)
+    }
+
+    return (
+        <RouterProvider router={createBrowserRouter([
+          ...dynamicRoutes,
+          //...stories,
+          ...Auth,
+          PageNotFoundRoute ])} />
+>>>>>>> 9e1d7473304de56056ac7c92f2a6f413941fa399
     )
 }
 
