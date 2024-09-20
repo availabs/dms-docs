@@ -15,7 +15,7 @@ const dmsDocs = {
     siteConfig({
       app: "dms-docs",
       type: "main",
-      logo: <div className='flex items-center px-8 h-full text-lg font-bold' >DMS</div>, 
+      //logo: <div className='flex items-center px-8 h-12 text-lg font-bold' >DMS</div>, 
       rightMenu:  <Link className='flex items-center px-8 text-lg font-bold h-12' to='/'> right </Link>,
       baseUrl: "/docs",
       API_HOST

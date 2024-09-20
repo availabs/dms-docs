@@ -21,8 +21,9 @@ import ManageUsers from './pages/users/manage'
 import Layout from './pages/layout'
 
 export const storiesConfig = (config) => {
-  const { baseUrl, AUTH_HOST = 'https://availauth.availabs.org' } = config
+  let { baseUrl, AUTH_HOST = 'https://availauth.availabs.org' } = config
   //console.log('test', AUTH_HOST)
+  baseUrl = baseUrl === '/' ? '' : baseUrl
   return {
     format: ProjectFormat,
     baseUrl, 
@@ -48,27 +49,27 @@ export const storiesConfig = (config) => {
           { 
             type: Home,
             action: "view",
-            path: "/",
+            path: "",
           },
           { 
             type: Tasks,
             action: "edit",
-            path: "/tasks",
+            path: "tasks",
           },
           { 
             type: Tasks,
             action: "edit",
-            path: "/tasks/:userId",
+            path: "tasks/:userId",
           },
           { 
             type: Project,
             action: "edit",
-            path: "/project/:id",
+            path: "project/:id",
           },
           { 
             type: Project,
             action: "edit",
-            path: "/project/:id/story/:storyId",
+            path: "project/:id/story/:storyId",
           },
           // { 
           //   type: ManageUsers,

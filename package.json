@@ -15,9 +15,10 @@
   "dependencies": {
     "@availabs/ams": "^2.0.9",
     "@availabs/avl-falcor": "^0.0.3",
-    "@availabs/dms": "^0.0.6",
+    "@availabs/dms": "^0.0.8",
     "@headlessui/react": "^2.1.2",
     "@hello-pangea/dnd": "^16.6.0",
+    "@observablehq/plot": "^0.6.15",
     "@reduxjs/toolkit": "^2.2.3",
     "@turf/centroid": "^7.0.0",
     "@turf/union": "^7.0.0",

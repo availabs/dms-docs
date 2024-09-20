@@ -5,26 +5,15 @@ import {
   RouterProvider
 } from "react-router-dom";
 
-import { dmsSiteFactory, registerDataType, Selector, adminConfig, registerComponents } from "./modules/dms/src/"
+import { DmsSite, adminConfig, registerComponents } from "./modules/dms/src/"
+import { withAuth, useAuth } from "@availabs/ams"
 import ComponentRegistry from '~/component_registry'
 
 
 registerComponents(ComponentRegistry)
-registerDataType("selector", Selector)
+//registerDataType("selector", Selector)
 
 import Auth from './sites/auth'
-
-export const getSubdomain = (host) => {
-    // ---
-    // takes window.location.host and returns subdomain
-    // only works with single depth subdomains 
-    // ---
-    return host.split('.').length > 2 ?
-    window.location.host.split('.')[0].toLowerCase() : 
-    host.split('.').length > 1 ?  
-        window.location.host.split('.')[0].toLowerCase() :  
-        false
-}
 
 import dmsDocs from './sites/dms'
 import stories from './sites/stories'
@@ -42,23 +31,6 @@ Auth.forEach(f => {
 })
 
 function App() {
-  const SUBDOMAIN = getSubdomain(window.location.host)
-  const [dynamicRoutes, setDynamicRoutes] = useState([]);
-    useEffect(() => {
-        (async function() {
-            const dynamicRoutes = await dmsSiteFactory({
-                dmsConfig: adminConfig({
-                    app: 'mitigate-ny',
-                    type: 'pattern-admin',
-                    baseUrl: '/list'
-                }),
-                //theme   
-            });
-            setDynamicRoutes(dynamicRoutes);
-        })()
-    }, []);
-
-    console.log('routes',dynamicRoutes)
 
     const PageNotFoundRoute = {
         path: "/*",
@@ -66,11 +38,22 @@ function App() {
     }
 
     return (
-        <RouterProvider router={createBrowserRouter([
-          ...dynamicRoutes,
-          //...stories,
-          ...Auth,
-          PageNotFoundRoute ])} 
+        <DmsSite
+            dmsConfig={
+                adminConfig({
+                    app: 'dms-docs',
+                    type: 'pattern-admin',
+                    baseUrl: '/list'
+                })
+
+            }
+            authWrapper={withAuth}
+            routes={[
+                ...Auth, 
+                //...stories,
+                PageNotFoundRoute
+
+            ]}
         />
     )
 }
