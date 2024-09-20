@@ -21,6 +21,8 @@ import Auth from './sites/auth'
 import dmsDocs from './sites/dms'
 import stories from './sites/stories'
 
+
+
 // const Sites = {
 //   'docs': dmsDocs,
 //   'stories': stories
@@ -35,7 +37,7 @@ Auth.forEach(f => {
 
 function App() {
 
-  const SUBDOMAIN = getSubdomain(window.location.host)
+  //const SUBDOMAIN = getSubdomain(window.location.host)
   const [dynamicRoutes, setDynamicRoutes] = useState([]);
     useEffect(() => {
         (async function() {
