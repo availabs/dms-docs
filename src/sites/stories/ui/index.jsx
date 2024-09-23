@@ -348,5 +348,63 @@ export function TD({children, colspan, className, border='border'}) {
   )
 }
 
+export function Tabs({ tabs, setTabs }) {
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+  }
 
-        
+  const handleTabChange = (selectedTabName) => {
+    setTabs(
+      (tabs || []).map((tab) =>
+        tab.name === selectedTabName
+          ? { ...tab, isActive: true }
+          : { ...tab, isActive: false }
+      )
+    );
+  };
+
+  return (
+    <div>
+      {/* Dropdown for small screens */}
+      <div className="sm:hidden">
+        <label htmlFor="tabs" className="sr-only">
+          Select a tab
+        </label>
+        <select
+          id="tabs"
+          name="tabs"
+          value={(tabs || []).find((tab) => tab.isActive)?.name}
+          onChange={(e) => handleTabChange(e.target.value)}
+          className="block w-full rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+        >
+          {(tabs || []).map((tab) => (
+            <option key={tab.name} value={tab.name}>
+              {tab.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Tabs for larger screens */}
+      <div className="hidden sm:block">
+        <nav aria-label="Tabs" className="flex space-x-4">
+          {(tabs || []).map((tab) => (
+            <span
+              key={tab.name}
+              onClick={() => handleTabChange(tab.name)}
+              aria-current={tab.isActive ? "page" : undefined}
+              className={classNames(
+                tab.isActive
+                  ? "bg-gray-200 text-gray-800"
+                  : "text-gray-600 hover:text-gray-800",
+                "rounded-md px-3 py-2 text-sm font-medium cursor-pointer"
+              )}
+            >
+              {tab.name}
+            </span>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}   
