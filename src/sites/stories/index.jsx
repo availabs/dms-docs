@@ -5,6 +5,7 @@ import AuthMenu from "./ui/AuthMenu";
 import { withAuth } from "@availabs/ams";
 
 import { Selector /*registerComponents*/ } from "../../modules/dms/src";
+import cloneDeep from "lodash/cloneDeep";
 registerDataType("selector", Selector);
 
 // const API_HOST = "https://graph.availabs.org";
@@ -21,19 +22,31 @@ import Tasks from "./pages/tasks";
 import Project from "./pages/project";
 import ManageUsers from "./pages/users/manage";
 import Layout from "./pages/layout";
+import { updateRegisteredFormats, updateAttributes } from "../../modules/dms/src";
 
 export const storiesConfig = (config) => {
-  let { baseUrl, AUTH_HOST = "https://availauth.availabs.org" } = config;
+  let {
+    baseUrl, 
+    AUTH_HOST = "https://availauth.availabs.org",
+    app = "project-manager2",
+    type = "project",
+  } = config;
   baseUrl = baseUrl === "/" ? "" : baseUrl;
 
+  const format = cloneDeep(ProjectFormat)
+  format.app = app
+  format.type = type
+  updateRegisteredFormats(format.registerFormats, app, type)
+  updateAttributes(format.attributes, app, type)
+
   return {
-    format: ProjectFormat,
+    format,
     baseUrl,
     children: [
       {
         type: (props) => (
           <StoriesContext.Provider
-            value={{ baseUrl, user: props.user, AUTH_HOST }}
+            value={{ baseUrl, user: props.user, AUTH_HOST, format }}
           >
             <Layout
               logo={
@@ -120,7 +133,7 @@ export const membersConfig = (config) => {
           {
             type: ManageUsers,
             action: "edit",
-            path: "/manage",
+            path: "manage",
           },
         ],
       },
@@ -129,6 +142,6 @@ export const membersConfig = (config) => {
 };
 
 export default [
-  dmsPageFactory(storiesConfig({ baseUrl: "" }), withAuth),
+  dmsPageFactory(storiesConfig({ baseUrl: "",  app: "project-manager2", type: "project" }), withAuth),
   dmsPageFactory(membersConfig({ baseUrl: "/users" }), withAuth),
 ];

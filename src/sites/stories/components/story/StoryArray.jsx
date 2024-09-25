@@ -1,17 +1,8 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 
 import { Link } from "react-router-dom";
 
 import {
-  P,
-  H1,
-  H2,
-  ModalContainer,
-  ButtonPrimary,
-  ButtonSecondary,
-  GridContaier,
-  Card,
-  Input,
   TableInput,
   Table,
   TH,
@@ -22,12 +13,8 @@ import {
 } from "../../ui/";
 
 import { ProjectContext } from "../../pages/project";
-import { StoriesContext } from "../../index";
-import {
-  StoryArcFormat,
-  StoryFormat,
-  MemberFormat,
-} from "../../stories.formats.js";
+
+import { StoryFormat, MemberFormat } from "../../stories.formats.js";
 
 import { MagnifyingGlassCircle } from "../../ui/icons";
 
@@ -346,33 +333,27 @@ function TotalsRow({ stories }) {
   );
 }
 
-function Edit({ Component, item, value, onChange, attr, ...props }) {
+function Edit({ value, onChange, ...props }) {
   const { project, baseUrl, apiUpdate, apiLoad, activeTab } =
-    React.useContext(ProjectContext) || {};
+    useContext(ProjectContext) || {};
 
   const createStory = (v) => {
     onChange([...(value || []), { title: v, state: "unstarted" }]);
   };
 
-  const [members, setMembers] = React.useState([]);
+  const [members, setMembers] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const loadMembers = async () => {
-      // console.log('gonna load')
       let memData = await apiLoad({
         format: MemberFormat,
         children: [
           {
             action: "list",
             path: "/*",
-            // filter:{
-            //   attributes: ['name', 'desc']
-            // },
           },
         ],
       });
-      //setUsers(storyMembers)
-      //   console.log("memData", memData);
       setMembers(memData);
     };
     loadMembers();
@@ -397,7 +378,7 @@ function Edit({ Component, item, value, onChange, attr, ...props }) {
                 return st.status !== "Done";
               } else if (activeTab?.name === "Completed") {
                 return st.status === "Done";
-              }
+              } else return true;
             })
             .sort((a, b) => {
               //console.log('sort',a,b, a?.[status] || 'none', a?.[status] || 'none', statuses[b?.[status] || 'none'].index, statuses[a?.[status] || 'none'].index , statuses[b?.[status] || 'none'].index - statuses[a?.[status] || 'none'].index)
@@ -417,8 +398,8 @@ function Edit({ Component, item, value, onChange, attr, ...props }) {
   );
 }
 
-function View({ Component, value, attr }) {
-  return <div> Story Arc View </div>;
+function View({ ...props }) {
+  return <div> Story Arc </div>;
 }
 
 export default {

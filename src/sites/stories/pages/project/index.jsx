@@ -13,6 +13,7 @@ import {
   LexicalEdit,
   Tabs,
 } from "../../ui/";
+import { ProjectFormat } from "../../stories.formats.js";
 
 import { Link, useSubmit, useLocation } from "react-router-dom";
 
@@ -62,6 +63,7 @@ function Project({
   const [tabs, setTabs] = React.useState([
     { name: "Current", isActive: true },
     { name: "Completed", isActive: false },
+    { name: "Completed Arcs", isActive: false },
   ]);
   const submit = useSubmit();
   const { pathname } = useLocation();
@@ -99,8 +101,14 @@ function Project({
     return attributes["arcs"].EditComp;
   }, []);
 
-  const ArcChanges = (value) => {
-    console.log("arc changes", value);
+  const ArcChanges = async (value) => {
+    await apiUpdate({
+      data: {
+        id: item.id,
+        arcs: value,
+      },
+      config: { format: ProjectFormat },
+    });
   };
 
   return (

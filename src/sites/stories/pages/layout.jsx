@@ -1,13 +1,15 @@
 
-import React from 'react'
+import React, {useContext} from 'react'
 import Layout from '../ui/layout/layout'
-import { ProjectFormat } from '../stories.formats.js'
+import { StoriesContext } from '../index'
 
 const Wrapper = ({dataItems, apiLoad, children, baseUrl, logo, rightMenu, }) => {
   
   // const projects = React.useMemo(()=> {
   //   return dataItems
   // },[dataItems])
+
+  const { format: ProjectFormat } = useContext(StoriesContext)
   const [projects,setProjects] = React.useState([])
 
   React.useEffect(() => {

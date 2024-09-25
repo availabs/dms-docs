@@ -26,6 +26,10 @@ export const StoryArcFormat = {
       type: 'text'
     }, 
     {
+      key: 'isCompleted',
+      type: 'text'
+    }, 
+    {
       key: 'stories',
       type: 'dms-format',
       isArray: true,
