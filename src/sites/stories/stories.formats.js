@@ -93,8 +93,40 @@ export const StoryFormat = {
       isArray: true,
       format: 'project-manager2+member'
     },
+    { key: "events",
+      type: 'dms-format',
+      isArray: true,
+      format: 'project-manager2+story-event'
+    },
     { key: "description",
       type: "lexical"
+    }
+  ]
+}
+
+export const StoryEventFormat = {
+  app: 'project-manager2',
+  type: 'story-event',
+  attributes: [
+    {
+      key: 'event_time',
+      type: 'text',
+      required: true
+    },
+    {
+      key: 'event_time',
+      type: 'text',
+      required: true
+    },
+    {
+      key: 'event_time',
+      type: 'text',
+      required: true
+    }, 
+    {
+      key: 'story',
+      type: 'dms-format',
+      format: 'project-manager2+story'
     }
   ]
 }

@@ -22,22 +22,25 @@ import Tasks from "./pages/tasks";
 import Project from "./pages/project";
 import ManageUsers from "./pages/users/manage";
 import Layout from "./pages/layout";
-import { updateRegisteredFormats, updateAttributes } from "../../modules/dms/src";
+import {
+  updateRegisteredFormats,
+  updateAttributes,
+} from "../../modules/dms/src";
 
 export const storiesConfig = (config) => {
   let {
-    baseUrl, 
+    baseUrl,
     AUTH_HOST = "https://availauth.availabs.org",
     app = "project-manager2",
     type = "project",
   } = config;
   baseUrl = baseUrl === "/" ? "" : baseUrl;
 
-  const format = cloneDeep(ProjectFormat)
-  format.app = app
-  format.type = type
-  updateRegisteredFormats(format.registerFormats, app, type)
-  updateAttributes(format.attributes, app, type)
+  const format = cloneDeep(ProjectFormat);
+  format.app = app;
+  format.type = type;
+  updateRegisteredFormats(format.registerFormats, app, type);
+  updateAttributes(format.attributes, app, type);
 
   return {
     format,
@@ -142,6 +145,14 @@ export const membersConfig = (config) => {
 };
 
 export default [
-  dmsPageFactory(storiesConfig({ baseUrl: "",  app: "project-manager2", type: "project" }), withAuth),
-  dmsPageFactory(membersConfig({ baseUrl: "/users" }), withAuth),
+  dmsPageFactory(
+    storiesConfig({ baseUrl: "", app: "project-manager3", type: "project" }),
+    withAuth
+  ),
+  dmsPageFactory(
+    membersConfig({
+      baseUrl: "/users",
+    }),
+    withAuth
+  ),
 ];

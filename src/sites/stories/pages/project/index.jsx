@@ -8,17 +8,14 @@ import {
   ButtonPrimary,
   ButtonSecondary,
   GridContaier,
-  Card,
   Input,
   LexicalEdit,
   Tabs,
 } from "../../ui/";
-import { ProjectFormat } from "../../stories.formats.js";
-
-import { Link, useSubmit, useLocation } from "react-router-dom";
-
-import { json2DmsForm, dmsDataTypes } from "~/modules/dms/src";
-import { useImmer } from "use-immer";
+import {
+  ProjectFormat,
+  StoryFormat,
+} from "../../stories.formats.js";
 
 import { StoriesContext } from "../../";
 
@@ -50,23 +47,17 @@ function NewArcModal({ setOpen, state, setState, createArc }) {
 }
 
 function Project({
-  dataItems,
   item,
-  updateAttribute,
   attributes,
   apiUpdate,
   apiLoad,
-  status,
   params,
-  ...props
 }) {
   const [tabs, setTabs] = React.useState([
     { name: "Current", isActive: true },
     { name: "Completed", isActive: false },
     { name: "Completed Arcs", isActive: false },
   ]);
-  const submit = useSubmit();
-  const { pathname } = useLocation();
   const { baseUrl = "" } = React.useContext(StoriesContext) || {};
 
   const defaultState = {
@@ -111,6 +102,29 @@ function Project({
     });
   };
 
+  const eventManager = async (story, oldStatus, newStatus) => {
+    const newEvent = {
+      event_time: new Date(),
+      event_type: {
+        assigned: { users: (story?.owners || []).map((u) => u.id) },
+        status_update: {
+          old_status: oldStatus,
+          new_Status: newStatus,
+        },
+      },
+      event_data: {},
+      story,
+    };
+
+    await apiUpdate({
+      data: {
+        id: story.id,
+        events: [...(story.events || []), newEvent],
+      },
+      config: { format: StoryFormat },
+    });
+  };
+
   return (
     <ProjectContext.Provider
       value={{
@@ -120,6 +134,7 @@ function Project({
         baseUrl,
         apiLoad,
         activeTab: (tabs || []).find((t) => t.isActive),
+        eventManager,
       }}
     >
       <StoryModal storyId={params.storyId} />

@@ -1,10 +1,8 @@
 import React from "react";
-
 import { Link, useNavigate } from "react-router-dom";
 
 import { ProjectContext } from "../../pages/project";
 import { StoryArcFormat, StoryFormat } from "../../stories.formats.js";
-
 import {
   ArrowRight,
   ArrowLeft,
@@ -12,7 +10,6 @@ import {
   MenuDots,
   MagnifyingGlassCircle,
 } from "../../ui/icons";
-
 import {
   ModalContainer,
   TableInput,

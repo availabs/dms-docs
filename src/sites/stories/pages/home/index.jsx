@@ -65,7 +65,7 @@ function Home ({dataItems, ...props}) {
   }
 
   const projects = React.useMemo(()=> {
-    return dataItems.filter(d => !d.icebox)
+    return dataItems?.filter(d => !d.icebox)
   },[dataItems])
 
 

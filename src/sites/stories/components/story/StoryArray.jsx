@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
-
 import { Link } from "react-router-dom";
+import cloneDeep from "lodash/cloneDeep";
 
 import {
   TableInput,
@@ -11,14 +11,9 @@ import {
   ButtonMenu,
   MenuItem,
 } from "../../ui/";
-
 import { ProjectContext } from "../../pages/project";
-
 import { StoryFormat, MemberFormat } from "../../stories.formats.js";
-
 import { MagnifyingGlassCircle } from "../../ui/icons";
-
-import cloneDeep from "lodash/cloneDeep";
 
 const statuses = {
   none: {
@@ -90,7 +85,15 @@ const points = {
 };
 
 function StoryDataSelector({ story, type, values }) {
-  const { apiUpdate } = React.useContext(ProjectContext) || {};
+  const { apiUpdate, eventManager } = React.useContext(ProjectContext) || {};
+
+  const statusChange = async (key) => {
+    await apiUpdate({
+      data: { id: story.id, [type]: key },
+      config: { format: StoryFormat },
+    });
+    eventManager(story, story?.status, key);
+  };
   return (
     <ButtonMenu
       className=" "
@@ -107,15 +110,7 @@ function StoryDataSelector({ story, type, values }) {
       }
     >
       {Object.keys(values).map((key) => (
-        <MenuItem
-          key={key}
-          onClick={() =>
-            apiUpdate({
-              data: { id: story.id, [type]: key },
-              config: { format: StoryFormat },
-            })
-          }
-        >
+        <MenuItem key={key} onClick={() => statusChange(key)}>
           <div className="flex flex-1 p-1 hover:bg-zinc-100">
             <div
               className={`flex flex-1 p-1 h-8 text-zinc-50 items-center justify-center ${values[key]?.bg}`}
@@ -199,12 +194,15 @@ function StoryOwnerSelector({ story, members, values }) {
   );
 }
 
-function StoryRow({ story, members, updateStory }) {
+function StoryRow({ story, key, members, updateStory }) {
   const { project, baseUrl, apiUpdate } =
     React.useContext(ProjectContext) || {};
 
   return (
-    <tr className="hover:bg-zinc-50 hover:shadow-md dark:hover:bg-zinc-800 border-l-8 border-zinc-500">
+    <tr
+      key={key}
+      className="hover:bg-zinc-50 hover:shadow-md dark:hover:bg-zinc-800 border-l-8 border-zinc-500"
+    >
       <TD>
         <div className="w-full h-full flex items-center justify-center">
           <input type="checkbox" />
@@ -212,7 +210,7 @@ function StoryRow({ story, members, updateStory }) {
       </TD>
       <TD>
         <Link
-          to={`${baseUrl}/project/${project.id}/story/${story.id}`}
+          to={`${baseUrl}/project/${project?.id}/story/${story?.id}`}
           className="flex group"
         >
           <div className="flex-1">
@@ -263,6 +261,31 @@ function CreateStoryRow({ createStory }) {
           placeholder="+ Add Story"
           onSubmit={() => {
             createStory(storyName);
+            setStoryName("");
+          }}
+          border=""
+        />
+      </TD>
+      <TD colspan="5" border="border-r border-y" />
+    </tr>
+  );
+}
+
+function ViewStoryRow() {
+  const [storyName, setStoryName] = React.useState();
+  return (
+    <tr className="hover:bg-zinc-50 hover:shadow-md dark:hover:bg-zinc-800 border-l-8 border-zinc-400">
+      <TD>
+        <div className="w-full h-full flex items-center justify-center">
+          <input disabled type="checkbox" />
+        </div>
+      </TD>
+      <TD border="border-t border-b border-l">
+        <TableInput
+          value={storyName}
+          onChange={(e) => setStoryName(e.target.value)}
+          placeholder="+ Add Story"
+          onSubmit={() => {
             setStoryName("");
           }}
           border=""
@@ -388,7 +411,7 @@ function Edit({ value, onChange, ...props }) {
               );
             })
             .map((story, i) => (
-              <StoryRow members={members} key={i} story={story} />
+              <StoryRow members={members} key={story.id} story={story} />
             ))}
           <CreateStoryRow createStory={createStory} />
           <TotalsRow stories={value} />
@@ -398,8 +421,55 @@ function Edit({ value, onChange, ...props }) {
   );
 }
 
-function View({ ...props }) {
-  return <div> Story Arc </div>;
+function View({ value }) {
+  const { apiLoad } = useContext(ProjectContext) || {};
+  const [members, setMembers] = useState([]);
+
+  useEffect(() => {
+    const loadMembers = async () => {
+      let memData = await apiLoad({
+        format: MemberFormat,
+        children: [
+          {
+            action: "list",
+            path: "/*",
+          },
+        ],
+      });
+      setMembers(memData);
+    };
+    loadMembers();
+  }, []);
+
+  return (
+    <div>
+      <Table>
+        <THead border="border-l-8 border-zinc-500">
+          <TH />
+          <TH>Story</TH>
+          <TH>Owner</TH>
+          <TH>Status</TH>
+          <TH>Priority</TH>
+          <TH>Type</TH>
+          <TH>Points</TH>
+        </THead>
+        <tbody>
+          {(value || [])
+            .sort((a, b) => {
+              return (
+                statuses[b?.["status"] || "none"].index -
+                statuses[a?.["status"] || "none"].index
+              );
+            })
+            .map((story, i) => (
+              <StoryRow members={members} key={story?.id} story={story} />
+            ))}
+          <ViewStoryRow />
+          <TotalsRow stories={value} />
+        </tbody>
+      </Table>
+    </div>
+  );
 }
 
 export default {

@@ -1,18 +1,11 @@
 import React, { useEffect, useMemo, Fragment } from "react";
 
 import { H1, GridContaier, Card } from "../../ui/";
-
 import { MemberFormat } from "../../stories.formats";
 
-function Tasks({
-  dataItems = [],
-  attributes,
-  user,
-  params,
-  apiLoad,
-  ...props
-}) {
-  console.log("attributes", attributes);
+export const TaskContext = React.createContext(undefined);
+
+function Tasks({ dataItems = [], attributes, user, apiLoad }) {
   const [members, setMembers] = React.useState([]);
 
   useEffect(() => {

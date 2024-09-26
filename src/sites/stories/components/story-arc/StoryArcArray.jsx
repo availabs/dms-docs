@@ -1,7 +1,7 @@
-import React from "react";
+import React, { Fragment } from "react";
+import { useFalcor } from "@availabs/avl-falcor";
 
 import { H1, H2, ButtonPrimary, Card } from "../../ui/";
-import { useFalcor } from "@availabs/avl-falcor";
 import { StoryArcFormat } from "../../stories.formats.js";
 import { ProjectContext } from "../../pages/project";
 
@@ -48,6 +48,27 @@ function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
           item={item}
           onChange={updateStories}
         />
+      </div>
+    </Card>
+  );
+}
+
+function StoryArcView({ item, attributes }) {
+  const StoriesView = React.useMemo(() => {
+    return attributes["stories"].ViewComp;
+  }, []);
+
+  return (
+    <Card className="xl:col-span-15 sm:col-span-2">
+      <div className="flex items-center justify-between w-full mb-2">
+        <div className="flex items-center xl:col-span-13 sm:col-span-1">
+          <H1>{item.name}</H1>
+        </div>
+        <div className="flex items-center xl:col-span-2 justify-end"> </div>
+      </div>
+
+      <div>
+        <StoriesView value={item.stories} item={item} />
       </div>
     </Card>
   );
@@ -103,8 +124,21 @@ function ArrayEdit({ Component, value, onChange, attr, ...props }) {
   );
 }
 
-function View({ Component, value, attr }) {
-  return <div> Story Arc View </div>;
+function View({ value, attr }) {
+  return (
+    <Fragment>
+      {(value || []).map((v, i) => (
+        <>
+          <StoryArcView
+            key={`${v.id}_${i}`}
+            item={v}
+            arcIndex={i}
+            attributes={attr.attributes}
+          />
+        </>
+      ))}
+    </Fragment>
+  );
 }
 
 export default {

@@ -1,4 +1,3 @@
-
 import React, {useContext} from 'react'
 import Layout from '../ui/layout/layout'
 import { StoriesContext } from '../index'
