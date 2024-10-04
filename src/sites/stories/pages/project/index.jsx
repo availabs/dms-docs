@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from 'prop-types';
 
 import {
   P,
@@ -44,6 +45,12 @@ function NewArcModal({ setOpen, state, setState, createArc }) {
       </div>
     </ModalContainer>
   );
+}
+NewArcModal.prototype = {
+  setOpen: PropTypes.func,
+  state: PropTypes.any, 
+  setState: PropTypes.func, 
+  createArc: PropTypes.func
 }
 
 function Project({
@@ -147,7 +154,7 @@ function Project({
             </div>
             <div className="flex items-center xl:col-span-2 justify-end pt-4">
               <ButtonPrimary
-                onClick={(e) => setState({ ...state, showNewArc: true })}
+                onClick={() => setState({ ...state, showNewArc: true })}
               >
                 New Story Arc
               </ButtonPrimary>
@@ -174,6 +181,14 @@ function Project({
       </div>
     </ProjectContext.Provider>
   );
+}
+Project.prototype = {
+  item: PropTypes.object.isRequired,
+  attributes: PropTypes.object.isRequired,
+  apiLoad: PropTypes.func.isRequired,
+  apiUpdate: PropTypes.func.isRequired,
+  params: PropTypes.any.isRequired,
+  props: PropTypes.object,
 }
 
 export default Project;

@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
+
 import { Link } from "react-router-dom";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -12,6 +14,7 @@ import {
   MenuItem,
 } from "../../ui/";
 import { ProjectContext } from "../../pages/project";
+import { TaskContext } from "../../pages/tasks";
 import { StoryFormat, MemberFormat } from "../../stories.formats.js";
 import { MagnifyingGlassCircle } from "../../ui/icons";
 
@@ -85,7 +88,12 @@ const points = {
 };
 
 function StoryDataSelector({ story, type, values }) {
-  const { apiUpdate, eventManager } = React.useContext(ProjectContext) || {};
+  const { apiUpdate: projectApiUpdate, eventManager: projectEventManager } =
+    React.useContext(ProjectContext) || {};
+  const { apiUpdate: taskApiUpdate, eventManager: taskEventManager } =
+    React.useContext(TaskContext) || {};
+  const apiUpdate = projectApiUpdate ?? taskApiUpdate;
+  const eventManager = projectEventManager ?? taskEventManager;
 
   const statusChange = async (key) => {
     await apiUpdate({
@@ -125,7 +133,11 @@ function StoryDataSelector({ story, type, values }) {
 }
 
 function StoryOwnerSelector({ story, members, values }) {
-  const { apiUpdate } = React.useContext(ProjectContext) || {};
+  const { apiUpdate: projectApiUpdate } =
+    React.useContext(ProjectContext) || {};
+  const { apiUpdate: taskApiUpdate } = React.useContext(TaskContext) || {};
+  const apiUpdate = projectApiUpdate ?? taskApiUpdate;
+
   //console.log('story', story)
   let ownerIds = (story?.owners || []).map((owner) => owner.id);
 
@@ -194,9 +206,10 @@ function StoryOwnerSelector({ story, members, values }) {
   );
 }
 
-function StoryRow({ story, key, members, updateStory }) {
-  const { project, baseUrl, apiUpdate } =
+function StoryRow({ story, key, members, project: taskProject }) {
+  const { project: proj, baseUrl = "" } =
     React.useContext(ProjectContext) || {};
+  const project = proj ?? taskProject;
 
   return (
     <tr
@@ -271,31 +284,6 @@ function CreateStoryRow({ createStory }) {
   );
 }
 
-function ViewStoryRow() {
-  const [storyName, setStoryName] = React.useState();
-  return (
-    <tr className="hover:bg-zinc-50 hover:shadow-md dark:hover:bg-zinc-800 border-l-8 border-zinc-400">
-      <TD>
-        <div className="w-full h-full flex items-center justify-center">
-          <input disabled type="checkbox" />
-        </div>
-      </TD>
-      <TD border="border-t border-b border-l">
-        <TableInput
-          value={storyName}
-          onChange={(e) => setStoryName(e.target.value)}
-          placeholder="+ Add Story"
-          onSubmit={() => {
-            setStoryName("");
-          }}
-          border=""
-        />
-      </TD>
-      <TD colspan="5" border="border-r border-y" />
-    </tr>
-  );
-}
-
 function StatusBar({ stories, type, values }) {
   let statusData = (stories || []).reduce((out, story) => {
     if (!out[story?.[type] || "none"]) {
@@ -356,9 +344,11 @@ function TotalsRow({ stories }) {
   );
 }
 
-function Edit({ value, onChange, ...props }) {
-  const { project, baseUrl, apiUpdate, apiLoad, activeTab } =
-    useContext(ProjectContext) || {};
+function Edit({ value, onChange, item, project }) {
+  const { apiLoad: projectApiLoad, activeTab } =
+    React.useContext(ProjectContext) || {};
+  const { apiLoad: taskApiLoad } = React.useContext(TaskContext) || {};
+  const apiLoad = projectApiLoad ?? taskApiLoad;
 
   const createStory = (v) => {
     onChange([...(value || []), { title: v, state: "unstarted" }]);
@@ -404,14 +394,19 @@ function Edit({ value, onChange, ...props }) {
               } else return true;
             })
             .sort((a, b) => {
-              //console.log('sort',a,b, a?.[status] || 'none', a?.[status] || 'none', statuses[b?.[status] || 'none'].index, statuses[a?.[status] || 'none'].index , statuses[b?.[status] || 'none'].index - statuses[a?.[status] || 'none'].index)
               return (
                 statuses[b?.["status"] || "none"].index -
                 statuses[a?.["status"] || "none"].index
               );
             })
-            .map((story, i) => (
-              <StoryRow members={members} key={story.id} story={story} />
+            .map((story) => (
+              <StoryRow
+                members={members}
+                key={story.id}
+                story={story}
+                item={item}
+                project={project}
+              />
             ))}
           <CreateStoryRow createStory={createStory} />
           <TotalsRow stories={value} />
@@ -420,9 +415,19 @@ function Edit({ value, onChange, ...props }) {
     </div>
   );
 }
+Edit.propTypes = {
+  value: PropTypes.array.isRequired,
+  project: PropTypes.object,
+  item: PropTypes.object,
+  props: PropTypes.object,
+  onChange: PropTypes.func,
+};
 
-function View({ value }) {
-  const { apiLoad } = useContext(ProjectContext) || {};
+function View({ value, project }) {
+  const { apiLoad: projectApiLoad } = React.useContext(ProjectContext) || {};
+  const { apiLoad: taskApiLoad } = React.useContext(TaskContext) || {};
+  const apiLoad = projectApiLoad ?? taskApiLoad;
+
   const [members, setMembers] = useState([]);
 
   useEffect(() => {
@@ -440,7 +445,6 @@ function View({ value }) {
     };
     loadMembers();
   }, []);
-
   return (
     <div>
       <Table>
@@ -461,16 +465,27 @@ function View({ value }) {
                 statuses[a?.["status"] || "none"].index
               );
             })
-            .map((story, i) => (
-              <StoryRow members={members} key={story?.id} story={story} />
+            .map((story) => (
+              <>
+                <StoryRow
+                  story={story}
+                  key={story.id}
+                  members={members}
+                  project={project}
+                />
+              </>
             ))}
-          <ViewStoryRow />
           <TotalsRow stories={value} />
         </tbody>
       </Table>
     </div>
   );
 }
+View.propTypes = {
+  value: PropTypes.array.isRequired,
+  project: PropTypes.object,
+  props: PropTypes.object
+};
 
 export default {
   EditComp: Edit,

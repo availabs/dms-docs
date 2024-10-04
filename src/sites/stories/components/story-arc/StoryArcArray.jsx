@@ -1,13 +1,14 @@
 import React, { Fragment } from "react";
-import { useFalcor } from "@availabs/avl-falcor";
 
 import { H1, H2, ButtonPrimary, Card } from "../../ui/";
 import { StoryArcFormat } from "../../stories.formats.js";
 import { ProjectContext } from "../../pages/project";
+import { TaskContext } from "../../pages/tasks";
 
-function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
-  const { falcor } = useFalcor();
-  const { apiUpdate } = React.useContext(ProjectContext);
+function StoryArcEdit({ item, attributes, arcIndex, onChange, project }) {
+  const { apiUpdate: projectApiUpdate } = React.useContext(ProjectContext) || {};
+  const { apiUpdate: taskApiUpdate } = React.useContext(TaskContext) || {};
+  const apiUpdate = projectApiUpdate ?? taskApiUpdate;
 
   const StoriesEdit = React.useMemo(() => {
     return attributes["stories"].EditComp;
@@ -18,7 +19,6 @@ function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
   };
 
   const updateStories = async (v) => {
-    console.log("updateStories", { id: item.id, v });
     await apiUpdate({
       data: {
         id: item.id,
@@ -26,7 +26,6 @@ function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
       },
       config: { format: StoryArcFormat },
     });
-    console.log("updated story");
   };
 
   return (
@@ -46,6 +45,7 @@ function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
         <StoriesEdit
           value={item.stories}
           item={item}
+          project={project}
           onChange={updateStories}
         />
       </div>
@@ -53,7 +53,7 @@ function StoryArcEdit({ item, attributes, arcIndex, onChange }) {
   );
 }
 
-function StoryArcView({ item, attributes }) {
+function StoryArcView({ item, attributes, project }) {
   const StoriesView = React.useMemo(() => {
     return attributes["stories"].ViewComp;
   }, []);
@@ -68,13 +68,13 @@ function StoryArcView({ item, attributes }) {
       </div>
 
       <div>
-        <StoriesView value={item.stories} item={item} />
+        <StoriesView value={item.stories} item={item} project={project} />
       </div>
     </Card>
   );
 }
 
-function ArrayEdit({ Component, value, onChange, attr, ...props }) {
+function ArrayEdit({ Component, value, onChange, attr, item: project, ...props }) {
   const { activeTab } = React.useContext(ProjectContext) || {};
   if (!Array.isArray(value)) {
     return (
@@ -99,14 +99,14 @@ function ArrayEdit({ Component, value, onChange, attr, ...props }) {
     <>
       {(value || [])
         .filter((arc) => {
-          if (activeTab.name === "Completed Arcs") {
+          if (activeTab?.name === "Completed Arcs") {
             return arc.isCompleted === true;
           } else if (
-            activeTab.name === "Current" ||
-            activeTab.name === "Completed"
+            activeTab?.name === "Current" ||
+            activeTab?.name === "Completed"
           ) {
             return (
-              Boolean(arc.isCompleted) === false || arc.isCompleted === false
+              Boolean(arc?.isCompleted) === false || arc?.isCompleted === false
             );
           }
           return true;
@@ -115,6 +115,7 @@ function ArrayEdit({ Component, value, onChange, attr, ...props }) {
           <StoryArcEdit
             key={v.id}
             item={v}
+            project={project}
             arcIndex={i}
             attributes={attr.attributes}
             onChange={handleArcChange}
@@ -124,7 +125,7 @@ function ArrayEdit({ Component, value, onChange, attr, ...props }) {
   );
 }
 
-function View({ value, attr }) {
+function View({ value, attr, item: project }) {
   return (
     <Fragment>
       {(value || []).map((v, i) => (
@@ -133,6 +134,7 @@ function View({ value, attr }) {
             key={`${v.id}_${i}`}
             item={v}
             arcIndex={i}
+            project={project}
             attributes={attr.attributes}
           />
         </>

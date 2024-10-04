@@ -77,12 +77,14 @@ export const storiesConfig = (config) => {
           },
           {
             type: Tasks,
-            action: "edit",
+            action: "list",
+            loadAll: true,
             path: "tasks",
           },
           {
             type: Tasks,
-            action: "edit",
+            action: "list",
+            loadAll: true,
             path: "tasks/:userId",
           },
           {

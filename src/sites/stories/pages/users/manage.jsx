@@ -1,5 +1,5 @@
 import React from "react";
-import { withAuth, useAuth, getUsers } from "@availabs/ams";
+import { withAuth, useAuth } from "@availabs/ams";
 import {
   P,
   H1,
@@ -11,31 +11,23 @@ import {
   Card,
   Input,
   Select,
-  TableInput,
   Table,
   TH,
   TD,
   THead,
-  ButtonMenu,
 } from "../../ui/";
 
 import { StoriesContext } from "../../";
 
-import { ProjectContext } from "../project";
-
 import {
-  StoryArcFormat,
-  StoryFormat,
   MemberFormat,
 } from "../../stories.formats.js";
 
 const NewUserModal = withAuth(
-  ({ open, setOpen, apiLoad, apiUpdate, users }) => {
+  ({ open, setOpen, apiUpdate, users }) => {
     const user = useAuth();
-    //console.log('auth stuff', user)
     const { AUTH_HOST } = React.useContext(StoriesContext);
 
-    //const users = React.useMemo(() => authStuff.users, [authStuff])
     const blankUser = {
       user_id: "",
       email: "",

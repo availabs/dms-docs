@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import debounce from "lodash/debounce";
+import PropTypes from 'prop-types';
 
 import { ProjectContext } from "../../pages/project";
 import { StoryArcFormat, StoryFormat } from "../../stories.formats.js";
@@ -25,6 +27,7 @@ export function StoryModal({ storyId }) {
     React.useContext(ProjectContext) || {};
   const navigate = useNavigate();
 
+  const debounceDelay = 300;
   let { story, arc } = React.useMemo(
     () =>
       (project?.arcs || []).reduce((out, arc) => {
@@ -72,6 +75,22 @@ export function StoryModal({ storyId }) {
       },
     });
   };
+
+  const lexicalEditTextChange = useCallback(
+    debounce((v) => {
+      apiUpdate({
+        data: { id: story.id, description: v },
+        config: { format: StoryFormat },
+      });
+    }, debounceDelay),
+    [debounceDelay, apiUpdate]
+  );
+
+  React.useEffect(() => {
+    return () => {
+      lexicalEditTextChange.cancel();
+    };
+  }, [lexicalEditTextChange]);
 
   return (
     <ModalContainer
@@ -122,6 +141,7 @@ export function StoryModal({ storyId }) {
             <Link
               className="h-9 w-9 flex items-center justify-center hover:bg-zinc-200 rounded"
               to={`${baseUrl}/project/${project.id}`}
+              // onClick={() => navigate(-1)}
             >
               <Cancel className="h-5 w-5" />
             </Link>
@@ -131,12 +151,13 @@ export function StoryModal({ storyId }) {
           <div className="flex-1 text-sm  font-light">
             <LexicalEdit
               value={story?.description}
-              onChange={(v) =>
-                apiUpdate({
-                  data: { id: story.id, description: v },
-                  config: { format: StoryFormat },
-                })
-              }
+              onChange={(v) => {
+                lexicalEditTextChange(v)
+                // apiUpdate({
+                //   data: { id: story.id, description: v },
+                //   config: { format: StoryFormat },
+                // });
+              }}
             />
           </div>
           <div className="w-64 min-h-64 border"></div>
@@ -144,6 +165,9 @@ export function StoryModal({ storyId }) {
       </>
     </ModalContainer>
   );
+}
+StoryModal.prototype = {
+  storyId: PropTypes.any
 }
 
 function Story({ story, updateStory }) {
@@ -176,6 +200,10 @@ function Story({ story, updateStory }) {
       <TD />
     </tr>
   );
+}
+Story.prototype = {
+  story: PropTypes.object,
+  updateStory: PropTypes.func
 }
 
 // export default {

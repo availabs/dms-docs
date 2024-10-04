@@ -3,11 +3,6 @@ import Layout from '../ui/layout/layout'
 import { StoriesContext } from '../index'
 
 const Wrapper = ({dataItems, apiLoad, children, baseUrl, logo, rightMenu, }) => {
-  
-  // const projects = React.useMemo(()=> {
-  //   return dataItems
-  // },[dataItems])
-
   const { format: ProjectFormat } = useContext(StoriesContext)
   const [projects,setProjects] = React.useState([])
 
@@ -20,12 +15,11 @@ const Wrapper = ({dataItems, apiLoad, children, baseUrl, logo, rightMenu, }) => 
         { 
           action: "list",
           path: "/*",
-          // filter:{
-          //   attributes: ['name', 'desc']
-          // },
+          filter:{
+            attributes: ['name', 'desc']
+          },
         }]
       })
-      //setUsers(storyMembers)
       setProjects(projdata.filter(d => !d.icebox))
     }
     loadProjects()
