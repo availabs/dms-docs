@@ -86,13 +86,13 @@ function Tasks({
     if (params?.userId) {
       setSelectMember(
         (members || []).find(
-          (mem) => Number(mem.id) === Number(params.userId)
+          (mem) => Number(mem?.id) === Number(params?.userId)
         ) || {}
       );
     } else {
       setSelectMember(
         (members || []).find(
-          (mem) => Number(mem.user_id) === Number(user.id)
+          (mem) => Number(mem?.user_id) === Number(user?.id)
         ) || {}
       );
     }

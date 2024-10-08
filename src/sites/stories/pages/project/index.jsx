@@ -140,7 +140,7 @@ function Project({
         apiUpdate,
         baseUrl,
         apiLoad,
-        activeTab: (tabs || []).find((t) => t.isActive),
+        activeTab: (tabs || []).find((tab) => tab?.isActive),
         eventManager,
       }}
     >
