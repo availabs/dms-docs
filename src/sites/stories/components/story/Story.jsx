@@ -167,10 +167,10 @@ export function StoryModal({ storyId }) {
   );
 }
 StoryModal.prototype = {
-  storyId: PropTypes.any
+  storyId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired
 }
 
-function Story({ story, updateStory }) {
+function Story({ story }) {
   const { baseUrl, project } = React.useContext(ProjectContext);
   // const { baseUrl } = React.useContext(StoriesContext);
   return (
@@ -202,7 +202,7 @@ function Story({ story, updateStory }) {
   );
 }
 Story.prototype = {
-  story: PropTypes.object,
+  story: PropTypes.object.isRequired,
   updateStory: PropTypes.func
 }
 
