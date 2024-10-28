@@ -1,11 +1,8 @@
 import { useState, useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import ComponentRegistry from "~/component_registry";
-
-registerComponents(ComponentRegistry);
 
 import {
-  dmsSiteFactory,
+  DmsSite,
   registerDataType,
   Selector,
   adminConfig,
@@ -14,47 +11,41 @@ import {
 import Auth from "./sites/auth";
 import stories from "./sites/stories";
 
+//import ComponentRegistry from "~/component_registry";
+
+import { withAuth } from "@availabs/ams"
+
 registerDataType("selector", Selector);
+
+//registerComponents(ComponentRegistry);
+
 Auth.forEach((f) => {
   f.Component = f.element;
   delete f.element;
 });
 
+
 function App() {
-  const [dynamicRoutes, setDynamicRoutes] = useState([]);
-  useEffect(() => {
-    (async function () {
-      const dynamicRoutes = await dmsSiteFactory({
-        dmsConfig: adminConfig({
-          app: "dms-docs",
-          type: "pattern-admin",
-          baseUrl: "/list",
-        }),
-        //theme
-      });
-      setDynamicRoutes(dynamicRoutes);
-    })();
-  }, []);
-
-  //console.log('routes',dynamicRoutes)
-
-  const PageNotFoundRoute = {
-    path: "/*",
-    Component: () => (
-      <div className={"w-screen h-screen flex items-center bg-blue-50"}></div>
-    ),
-  };
-
-  return (
-    <RouterProvider
-      router={createBrowserRouter([
-        ...dynamicRoutes,
-        ...stories,
-        ...Auth,
-        PageNotFoundRoute,
-      ])}
-    />
-  );
+    return (
+      <DmsSite
+        dmsConfig = {
+          adminConfig({
+            app: 'dms-docs',
+            type: 'pattern-admin'
+          })
+        }
+        // defaultData={siteData}
+        authWrapper={withAuth}
+        // themes={themes}
+        // API_HOST='http://localhost:4444'
+        
+        routes={[
+          ...stories,
+          ...Auth
+        ]} 
+      />
+    )
 }
 
-export default App;
+export default App
+

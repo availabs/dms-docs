@@ -162,7 +162,7 @@ export function ModalContainer({
   return (
     <GridOverlay open={open}>
       <div
-        className={`${width} ${start}  w-full min-w-0 rounded-t-3xl bg-white p-[--gutter] shadow-lg ring-1 ring-zinc-950/10 [--gutter:theme(spacing.8)] sm:mb-auto sm:rounded-2xl dark:bg-zinc-900 dark:ring-white/10 forced-colors:outline`}
+        className={`${width} ${start}  w-full min-w-0 rounded-t-3xl bg-white  shadow-lg ring-1 ring-zinc-950/10  sm:mb-auto sm:rounded-2xl dark:bg-zinc-900 dark:ring-white/10 forced-colors:outline`}
       >
         {children}
       </div>
@@ -801,7 +801,7 @@ export function THead({ children, border }) {
 
 export function TH({ children }) {
   return (
-    <th className="border text-center border-zinc-950/10 px-4 py-2 font-medium first:pl-[var(--gutter,theme(spacing.2))] last:pr-[var(--gutter,theme(spacing.2))] dark:border-b-white/10 sm:first:pl-2 sm:last:pr-2">
+    <th className="border text-center border-zinc-950/10 px-4 py-2 font-medium  dark:border-b-white/10 sm:first:pl-2 sm:last:pr-2">
       {children}
     </th>
   );

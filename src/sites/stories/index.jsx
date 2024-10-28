@@ -148,7 +148,7 @@ export const membersConfig = (config) => {
 
 export default [
   dmsPageFactory(
-    storiesConfig({ baseUrl: "", app: "project-manager3", type: "project" }),
+    storiesConfig({ baseUrl: "", app: "project-manager2", type: "project" }),
     withAuth
   ),
   dmsPageFactory(
