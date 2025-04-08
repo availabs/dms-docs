@@ -31,7 +31,7 @@ function App() {
         dmsConfig = {
           adminConfig({
             app: 'dms-docs',
-            type: 'pattern-admin'
+            type: 'stories'
           })
         }
         // defaultData={siteData}
